@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>건강검진 AI 대시보드</title>
+
+<style>
+/* ====== 기본 스타일 ====== */
+body{
+  margin:0;
+  font-family:'Noto Sans KR', sans-serif;
+  background:#f5f7fa;
+}
+
+/* 헤더 */
+.hdr{
+  background:#0a2342;
+  color:#fff;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+}
+
+/* 레이아웃 */
+.app{
+  display:flex;
+  height:calc(100vh - 56px);
+}
+
+/* 사이드바 */
+.sb{
+  width:280px;
+  background:#fff;
+  border-right:1px solid #ddd;
+  overflow-y:auto;
+}
+
+.pt-item{
+  padding:10px;
+  border-bottom:1px solid #eee;
+  cursor:pointer;
+}
+
+.pt-item:hover{
+  background:#e3f0ff;
+}
+
+/* 메인 */
+.main{
+  flex:1;
+  padding:20px;
+}
+
+/* 카드 */
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:10px;
+  margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+</style>
+</head>
+
+<body>
+
+<header class="hdr">
+  <div>🏥 건강검진 AI 대시보드</div>
+  <div id="cnt">환자 수: -</div>
+</header>
+
+<div class="app">
+
+  <!-- 사이드바 -->
+  <aside class="sb" id="patientList"></aside>
+
+  <!-- 메인 -->
+  <main class="main" id="main">
+    <h3>환자를 선택하세요</h3>
+  </main>
+
+</div>
+
+<script>
+
+/* =========================
+   1. 데이터 (핵심 일부만)
+========================= */
+const PATIENTS = [
+  {
+    name:"김소라",
+    age:33,
+    risk_score:2,
+    risk_level:"중위험",
+    Hb:12.4,
+    PLT:135,
+    Albumin:3.6
+  },
+  {
+    name:"백소원",
+    age:36,
+    risk_score:7,
+    risk_level:"고위험",
+    Hb:9.4,
+    PLT:272,
+    Albumin:3.7
+  },
+  {
+    name:"서성경",
+    age:35,
+    risk_score:0,
+    risk_level:"저위험",
+    Hb:12.3,
+    PLT:224,
+    Albumin:3.8
+  }
+];
+
+/* =========================
+   2. 초기 렌더링
+========================= */
+const listEl = document.getElementById("patientList");
+const mainEl = document.getElementById("main");
+const cntEl = document.getElementById("cnt");
+
+function renderList(){
+  listEl.innerHTML = "";
+
+  PATIENTS.forEach((p,i)=>{
+    const div = document.createElement("div");
+    div.className = "pt-item";
+    div.innerHTML = `
+      <b>${p.name}</b><br>
+      <small>${p.risk_level}</small>
+    `;
+    div.onclick = ()=>selectPatient(i);
+    listEl.appendChild(div);
+  });
+
+  cntEl.innerText = "환자 수: " + PATIENTS.length;
+}
+
+/* =========================
+   3. 환자 선택
+========================= */
+function selectPatient(i){
+  const p = PATIENTS[i];
+
+  mainEl.innerHTML = `
+    <div class="card">
+      <h2>${p.name}</h2>
+      <p>나이: ${p.age}</p>
+      <p>위험도: <b>${p.risk_level}</b></p>
+    </div>
+
+    <div class="card">
+      <h3>주요 검사</h3>
+      <p>Hb: ${p.Hb}</p>
+      <p>PLT: ${p.PLT}</p>
+      <p>Albumin: ${p.Albumin}</p>
+    </div>
+
+    <div class="card">
+      <h3>AI 해석</h3>
+      <p>
+        ${
+          p.risk_level==="고위험"
+          ? "즉각적인 추적 검사 필요"
+          : p.risk_level==="중위험"
+          ? "정기 모니터링 필요"
+          : "정상 범위 유지"
+        }
+      </p>
+    </div>
+  `;
+}
+
+/* =========================
+   실행
+========================= */
+renderList();
+
+</script>
+
+</body>
+</html>
